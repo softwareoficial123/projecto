@@ -8,8 +8,25 @@ services:
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+
+  api:
+    image: projecto-api:prod
+    container_name: api-prod
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/mydb
+      - NODE_ENV=production
+    depends_on:
+      - db
+
+  web:
+    image: projecto-web:prod
+    container_name: web-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - NODE_ENV=production
+    depends_on:
+      - api

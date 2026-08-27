@@ -14,7 +14,7 @@ COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* turbo.json ./
 COPY apps/web ./apps/web
 COPY packages ./packages
 
-# Instalar TODO
+# Instalar
 RUN pnpm install
 
 # Construir específicamente el frontend
@@ -31,12 +31,9 @@ RUN groupadd --system --gid 1001 nodejs && \
     useradd --system --uid 1001 --gid nodejs nodejs
 
 # Copiar artefactos de Next.js standalone
-# Next.js standalone coloca la app lista para ejecutarse en esta carpeta
 COPY --from=builder --chown=nodejs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nodejs:nodejs /app/apps/web/public ./public
-COPY --from=builder --chown=nodejs:nodejs /app/apps/web/.next/static ./.next/static
 
 USER nodejs
 
-# Iniciar la aplicación en el puerto que Railway espera
-CMD ["node", "server.js"]
+# Iniciar la aplicación
+CMD ["node", "apps/web/server.js"]

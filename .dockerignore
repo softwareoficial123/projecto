@@ -1,10 +1,7 @@
-# Ignorar .env para que Docker no lo copie al contexto de build
-.env
-# Resto de ignorados, si los hay
+node_modules
 .next
 .turbo
-node_modules
-dist
-build
-coverage
+.git
+.env
 *.log
+dist
