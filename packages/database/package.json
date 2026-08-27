@@ -8,9 +8,7 @@
     "generate": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^5.0.0"
-  },
-  "devDependencies": {
+    "@prisma/client": "^5.0.0",
     "prisma": "^5.0.0"
   }
 }

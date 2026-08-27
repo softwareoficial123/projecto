@@ -6,7 +6,7 @@ export class GeminiService {
   private readonly apiKey: string;
 
   constructor(private configService: ConfigService) {
-    this.apiKey = this.configService.get("GEMINI_API_KEY");
+    this.apiKey = this.configService.get("GEMINI_API_KEY") || "";
   }
 
   async generate(prompt: string): Promise<string> {
