@@ -40,6 +40,7 @@ RUN groupadd --system --gid 1001 nodejs && \
 
 # Copiar desde el builder (artefactos listos)
 COPY --from=builder --chown=nodejs:nodejs /app/dist .
+COPY --from=builder --chown=nodejs:nodejs /app/packages/database ./packages/database
 # Copiar el script de entrada y darle permisos
 COPY --chown=nodejs:nodejs docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
