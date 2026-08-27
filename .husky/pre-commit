@@ -1,1 +1,3 @@
-npx lint-staged
+#!/bin/sh
+echo "Running type check..."
+pnpm typecheck && npx lint-staged
