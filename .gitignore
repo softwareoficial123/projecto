@@ -1,0 +1,23 @@
+# Dependencias
+node_modules
+.pnpm-store
+
+# Producción y Builds
+dist
+.next
+.turbo
+.output
+
+# Entornos y Secretos
+.env
+.env.*
+!.env.example
+
+# Logs y Temporales
+*.log
+.DS_Store
+.tmp
+dist
+build
+coverage
+*.tsbuildinfo
