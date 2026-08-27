@@ -1,7 +1,6 @@
-# Ignorar pnpm-lock.yaml para que pnpm genere uno compatible con Alpine
-pnpm-lock.yaml
-# Resto de ignorados, si los hay
+# Ignorar .env para que Docker no lo copie al contexto de build
 .env
+# Resto de ignorados, si los hay
 .next
 .turbo
 node_modules
