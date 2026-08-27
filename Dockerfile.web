@@ -36,5 +36,6 @@ COPY --from=builder --chown=nodejs:nodejs /app/apps/web/.next/standalone ./
 USER nodejs
 
 ENV PORT=8080
+ENV HOSTNAME="0.0.0.0"
 # Iniciar la aplicación
 CMD ["node", "apps/web/server.js"]
