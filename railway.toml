@@ -1,0 +1,7 @@
+[services.api-gateway]
+[services.api-gateway.build]
+dockerfilePath = "Dockerfile.api"
+
+[services.web]
+[services.web.build]
+dockerfilePath = "Dockerfile.web"
