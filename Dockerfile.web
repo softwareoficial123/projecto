@@ -36,4 +36,4 @@ COPY --from=builder --chown=nodejs:nodejs /app/apps/web/.next/standalone ./
 USER nodejs
 
 # Iniciar la aplicación
-CMD ["node", "apps/web/server.js"]
+CMD ["node", "apps/web/server.js", "-p", "8080"]
