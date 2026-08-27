@@ -1,17 +1,9 @@
 #!/bin/sh
 set -e
 
-log() {
-  echo "[$(date +'%Y-%m-%dT%H:%M:%S')] $1"
-}
-
-log "Iniciando proceso de despliegue del contenedor..."
-
-# Ejecutar migraciones de Prisma
-log "Running Prisma migrations..."
+echo "[$(date +'%Y-%m-%dT%H:%M:%S')] Aplicando migraciones de base de datos..."
+# La ruta es relativa al WORKDIR (/app) donde se copian los archivos
 ./node_modules/.bin/prisma migrate deploy --schema=packages/database/schema.prisma
-log "Migraciones finalizadas con éxito."
 
-# Iniciar la aplicación principal
-log "Iniciando API Gateway..."
-node apps/api-gateway/dist/index.js
+echo "[$(date +'%Y-%m-%dT%H:%M:%S')] Iniciando aplicación..."
+node dist/main.js
