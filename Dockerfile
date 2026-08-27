@@ -3,9 +3,16 @@ FROM node:22-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN npm install -g pnpm
-COPY . .
-RUN rm -f pnpm-lock.yaml # Forzar a pnpm a generar un nuevo lockfile compatible con Alpine
+
+# Copiar package.json para permitir que pnpm genere el lockfile para Alpine
+COPY package.json ./
+
+# Instalar dependencias (se generará pnpm-lock.yaml para Alpine)
 RUN pnpm install
+
+# Copiar el resto del proyecto
+COPY . .
+
 RUN pnpm build
 
 # Stage 2: Runner
