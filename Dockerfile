@@ -4,17 +4,23 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN npm install -g pnpm
 
-# Copiar package.json
+# Copiar package.json y el pnpm-lock.yaml (generado localmente y limpio)
 COPY package.json ./
+COPY pnpm-lock.yaml ./
 
-# Instalar dependencias (se generará un pnpm-lock.yaml compatible con Alpine)
-RUN pnpm install
+# Instalar dependencias usando --frozen-lockfile para reproducibilidad
+RUN pnpm install --frozen-lockfile
 
-# Copiar el resto del proyecto
-COPY . .
+# Copiar el resto del código fuente explícitamente
+COPY apps ./apps
+COPY packages ./packages
+COPY turbo.json ./turbo.json
+COPY eslint.config.mjs ./eslint.config.mjs
+COPY vitest.config.ts ./vitest.config.ts
+COPY scripts ./scripts
+COPY .dockerignore ./.dockerignore # Copiar también el dockerignore
 
 RUN pnpm build
-
 
 # Stage 2: Runner
 FROM node:22-alpine AS runner
