@@ -12,6 +12,13 @@ async function bootstrap() {
     new FastifyAdapter({ logger: true }), // Fastify logger habilitado
   );
 
+  // Seguridad CORS: Solo permitir el dominio del frontend
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  });
+
   // app.useLogger(app.get(Logger)); // Opcional si añades nestjs-pino
 
   try {
