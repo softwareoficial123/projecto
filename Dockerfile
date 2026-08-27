@@ -18,7 +18,8 @@ COPY turbo.json ./turbo.json
 COPY eslint.config.mjs ./eslint.config.mjs
 COPY vitest.config.ts ./vitest.config.ts
 COPY scripts ./scripts
-COPY .dockerignore ./.dockerignore # Copiar también el dockerignore
+COPY .dockerignore ./.dockerignore
+# Copiar también el dockerignore
 
 RUN pnpm build
 
