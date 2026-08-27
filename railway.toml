@@ -1,7 +1,13 @@
+[services]
+
 [services.api-gateway]
+rootDirectory = "."
 [services.api-gateway.build]
+builder = "dockerfile"
 dockerfilePath = "Dockerfile.api"
 
 [services.web]
+rootDirectory = "."
 [services.web.build]
+builder = "dockerfile"
 dockerfilePath = "Dockerfile.web"
