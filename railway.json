@@ -2,16 +2,16 @@
   "$schema": "https://railway.app/railway.schema.json",
   "services": {
     "api-gateway": {
-      "source": "apps/api-gateway/Dockerfile",
-      "rootDirectory": "apps/api-gateway",
+      "source": "Dockerfile.api",
+      "rootDirectory": ".",
       "deploy": {
         "restartPolicyType": "ON_FAILURE",
         "healthcheckPath": "/health"
       }
     },
     "web": {
-      "source": "apps/web/Dockerfile",
-      "rootDirectory": "apps/web",
+      "source": "Dockerfile.web",
+      "rootDirectory": ".",
       "deploy": {
         "restartPolicyType": "ON_FAILURE"
       }
