@@ -33,10 +33,10 @@ RUN groupadd --system --gid 1001 nodejs && \
 # Copiar artefactos de Next.js standalone
 # Next.js standalone coloca la app lista para ejecutarse en esta carpeta
 COPY --from=builder --chown=nodejs:nodejs /app/apps/web/.next/standalone ./
-# COPY --from=builder --chown=nodejs:nodejs /app/apps/web/public ./public
-# COPY --from=builder --chown=nodejs:nodejs /app/apps/web/.next/static ./.next/static
+COPY --from=builder --chown=nodejs:nodejs /app/apps/web/public ./public
+COPY --from=builder --chown=nodejs:nodejs /app/apps/web/.next/static ./.next/static
 
 USER nodejs
 
-# Iniciar la aplicación
-CMD ["node", "apps/web/server.js"]
+# Iniciar la aplicación en el puerto que Railway espera
+CMD ["node", "server.js"]
