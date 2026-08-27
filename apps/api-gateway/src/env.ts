@@ -10,10 +10,7 @@ const envSchema = z.object({
     .min(32, "JWT_SECRET debe tener al menos 32 caracteres")
     .default("super-secret-key-de-al-menos-32-caracteres"),
   PORT: z.string().default("3001"),
-  GEMINI_API_KEY: z
-    .string()
-    .min(1, "GEMINI_API_KEY es obligatoria")
-    .default("dummy-key-for-development"),
+  GEMINI_API_KEY: z.string().optional(),
 });
 
 const result = envSchema.safeParse(process.env);
