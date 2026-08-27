@@ -1,3 +1,16 @@
 #!/bin/sh
-echo "Running type check..."
-pnpm typecheck && npx lint-staged
+echo "--- Iniciando verificación de calidad (Pre-commit) ---"
+
+echo "1. Ejecutando verificación de tipos (typecheck)..."
+pnpm typecheck
+
+echo "2. Ejecutando linting global (turbo lint)..."
+pnpm lint
+
+echo "3. Ejecutando tests unitarios (vitest)..."
+pnpm test
+
+echo "4. Formateando archivos modificados (lint-staged)..."
+npx lint-staged
+
+echo "--- ¡Verificación exitosa! ---"

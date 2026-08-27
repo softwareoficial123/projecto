@@ -1,0 +1,47 @@
+# --- Etapa 1: Builder ---
+FROM node:22-bookworm-slim AS builder
+
+# Instalar dependencias del sistema necesarias para construir librerías nativas (Prisma/etc)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssl python3 make g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+RUN npm install -g pnpm
+
+# Copiar configuración del workspace
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* turbo.json ./
+# Copiar configuración de aplicaciones y paquetes
+COPY apps/api-gateway ./apps/api-gateway
+COPY packages ./packages
+
+# Instalar TODO (para poder ejecutar builds)
+RUN pnpm install
+
+# Construir específicamente el paquete deseado (p. ej. api-gateway)
+RUN pnpm --filter api-gateway build
+
+# Desplegar la app construida a una carpeta limpia /app/dist
+RUN pnpm --filter api-gateway --prod deploy /app/dist
+
+# --- Etapa 2: Runner ---
+FROM node:22-bookworm-slim AS runner
+WORKDIR /app
+
+# Instalar openssl necesario para Prisma en runtime
+RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV NODE_ENV=production
+
+# Crear usuario seguro
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --gid nodejs nodejs
+
+# Copiar desde el builder (artefactos listos)
+COPY --from=builder --chown=nodejs:nodejs /app/dist .
+
+USER nodejs
+
+# Iniciar la aplicación
+CMD ["node", "dist/main.js"]
