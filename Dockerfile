@@ -4,12 +4,11 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN npm install -g pnpm
 
-# Copiar package.json y el pnpm-lock.yaml (ahora limpio)
+# Copiar package.json
 COPY package.json ./
-COPY pnpm-lock.yaml ./
 
-# Instalar dependencias usando --frozen-lockfile
-RUN pnpm install --frozen-lockfile
+# Instalar dependencias (se generará un pnpm-lock.yaml compatible con Alpine)
+RUN pnpm install
 
 # Copiar el resto del proyecto
 COPY . .
