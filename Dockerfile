@@ -4,6 +4,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN npm install -g pnpm
 COPY . .
+RUN rm -f pnpm-lock.yaml # Forzar a pnpm a generar un nuevo lockfile compatible con Alpine
 RUN pnpm install
 RUN pnpm build
 
