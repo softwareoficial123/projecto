@@ -3,7 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "@repo/*": ["packages/*"],
-      "@web/*": ["apps/web/src/*"]
+      "@web/*": ["apps/web/src/*"],
+      "@/*": ["apps/web/src/*"]
     }
   }
 }

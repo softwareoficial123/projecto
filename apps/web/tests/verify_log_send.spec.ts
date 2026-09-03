@@ -1,0 +1,1 @@
+import { test } from '@playwright/test'; test('verificar envio de logs', async ({ page }) => { await page.goto('http://localhost:3000/test-log'); await page.click('button'); await page.waitForTimeout(1000); });
