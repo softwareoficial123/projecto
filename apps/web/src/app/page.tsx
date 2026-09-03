@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import { ThemeSwitcher } from "@web/components/core/ThemeSwitcher";
+import { ThemeSwitcher } from '../components/core/ThemeSwitcher';
 
 export default function WelcomePage() {
   const { t, i18n } = useTranslation();
