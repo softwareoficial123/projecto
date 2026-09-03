@@ -2,38 +2,66 @@
 set -e
 
 if [ -z "$1" ]; then
-  echo "Uso: ./scripts/init-integration.sh <nombre-integracion>"
+  echo "Uso: ./scripts/init-integration.sh <nombre-modulo>"
   exit 1
 fi
 
-INTEGRATION_NAME=$1
-DIR="packages/infra-$INTEGRATION_NAME"
+MODULE_NAME=$1
+DIR="packages/infra-$MODULE_NAME"
 
-echo "Creando estructura para $INTEGRATION_NAME en $DIR..."
+echo "Creando estructura Plug-and-Play para $MODULE_NAME en $DIR..."
 
-mkdir -p "$DIR/src/internal" "$DIR/src/mappers" "$DIR/src/services" "$DIR/tests"
+mkdir -p "$DIR/src/domain" "$DIR/src/infrastructure" "$DIR/tests"
 
 # package.json
 cat <<EOF > "$DIR/package.json"
 {
-  "name": "@repo/infra-$INTEGRATION_NAME",
+  "name": "@repo/infra-$MODULE_NAME",
   "version": "1.0.0",
   "main": "./src/index.ts",
   "dependencies": {
-    "@repo/core": "workspace:*"
+    "@repo/core": "workspace:*",
+    "@repo/logger": "workspace:*"
   }
 }
 EOF
 
-# index.ts (El contrato obligatorio)
+# src/module.config.ts
+cat <<EOF > "$DIR/src/module.config.ts"
+import { ModuleConfig } from '@repo/core';
+
+export const config: ModuleConfig = {
+  metadata: {
+    name: '$MODULE_NAME',
+    version: '1.0.0',
+    description: 'Módulo de integración para $MODULE_NAME',
+    goals: ['Conectividad con API', 'Manejo de eventos'],
+  },
+  dependencies: {
+    modules: [],
+  },
+  settings: {
+    enabled: true,
+  },
+};
+EOF
+
+INTEGRATION_CLASS_NAME=$(echo "$MODULE_NAME" | sed -r 's/(^|-)([a-z])/\U\2/g')
+
+# src/index.ts (Implementación BaseModule)
 cat <<EOF > "$DIR/src/index.ts"
-import { BaseIntegration } from '@repo/core';
+import { BaseModule, ModuleConfig } from '@repo/core';
+import { Logger } from 'pino';
+import { config } from './module.config';
 
-export class ${INTEGRATION_NAME^}Adapter implements BaseIntegration {
-  readonly id = '$INTEGRATION_NAME';
+export class ${INTEGRATION_CLASS_NAME}Module implements BaseModule<unknown, Logger> {
+  readonly id = '$MODULE_NAME';
+  readonly config: ModuleConfig = config;
+  private logger?: Logger;
 
-  async initialize(): Promise<void> {
-    // Inicializar cliente
+  async initialize(context: { logger: Logger }): Promise<void> {
+    this.logger = context.logger;
+    this.logger.info('$MODULE_NAME inicializado correctamente');
   }
 
   async healthcheck(): Promise<{ status: 'healthy' | 'unhealthy' }> {
@@ -42,5 +70,5 @@ export class ${INTEGRATION_NAME^}Adapter implements BaseIntegration {
 }
 EOF
 
-echo "Estructura creada en $DIR. ¡Ya puedes empezar a desarrollar!"
-EOF
+echo "Estructura modular creada en $DIR."
+echo "Configura tus objetivos en $DIR/module.config.ts"

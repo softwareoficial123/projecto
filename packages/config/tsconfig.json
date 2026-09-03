@@ -6,6 +6,7 @@
     "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "declaration": true,
     "jsx": "preserve",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true

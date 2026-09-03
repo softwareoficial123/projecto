@@ -1,59 +1,74 @@
-# Manual del Desarrollador: High Traffic Monorepo
+# Manual del Desarrollador: Contribución y Arquitectura
 
-Este repositorio contiene la plataforma centralizada para integraciones de mensajería (WhatsApp, Telegram, etc.) y pagos (Mercado Pago, etc.). La arquitectura está diseñada para ser escalable, portable y modular.
+Bienvenido al equipo. Este documento detalla cómo contribuir manteniendo la integridad y modularidad del sistema.
 
-## 1. Filosofía de Arquitectura
+## 1. Filosofía de Arquitectura: Plug-and-Play
 
-Trabajamos bajo el patrón de **Bounded Contexts** (Contextos Acotados) y **Adaptadores**:
+Operamos bajo una arquitectura **Contract-First**. Nada en el sistema depende directamente de una implementación, sino de interfaces definidas en `@repo/core`.
 
-- `apps/`: Son los puntos de entrada (Interfaces: API Gateway, Web). **NUNCA** se importan entre sí.
-- `packages/`: Contienen la lógica y adaptadores.
-  - `core/`: Contiene los contratos (interfaces) que **deben** cumplir todas las integraciones.
-  - `infra-*/`: Adaptadores que implementan los contratos del `core`.
+- **Aislamiento Total**: Las aplicaciones (`apps/`) NUNCA se importan entre sí.
+- **Independencia de Módulos**: Si eliminas una carpeta `infra-*`, el sistema debe arrancar correctamente, simplemente desactivando esa funcionalidad.
+- **Lógica en el Dominio**: La lógica de negocio pesada debe vivir en `src/domain/` de cada módulo, no en los controladores del API.
 
 ## 2. Configuración Inicial
 
 ```bash
-# 1. Instalar dependencias
+# 1. Instalar dependencias del workspace
 pnpm install
 
-# 2. Levantar entorno local
+# 2. Construir paquetes base
+pnpm build
+
+# 3. Levantar entorno de desarrollo
 pnpm dev
 ```
 
-## 3. Crear una Nueva Integración
+## 3. Creación de Nuevos Módulos o Librerías
 
-Para añadir un nuevo proveedor (ej. `facebook`), **NO** crees carpetas manualmente. Usa el script automatizado que garantiza la estructura base obligatoria:
+**REGLA DE ORO**: No crees carpetas de paquetes manualmente. Usa el script automatizado:
 
 ```bash
-# Genera toda la estructura: src, tests, mappers, servicios
-./scripts/init-integration.sh facebook
+# Genera estructura, contratos BaseModule y configuraciones locales
+./scripts/init-integration.sh mi-nueva-lib
 ```
 
-El script creará un paquete en `packages/infra-facebook/`. **Todo nuevo paquete DEBE cumplir con la interfaz `BaseIntegration` definida en `@repo/core`.**
+### Pasos tras la creación:
+1. Define los objetivos y dependencias en `packages/infra-mi-nueva-lib/src/module.config.ts`.
+2. Implementa la lógica en `src/domain/`.
+3. Registra el módulo en `apps/api-gateway/src/main.ts` usando el `ModuleRegistry`.
 
-## 4. Calidad y Guardias (Obligatorio)
+## 4. Reglas de Oro (Arquitectura)
 
-Este repositorio cuenta con guardias automáticas que impiden commits de código defectuoso o mal estructurado.
+1. **Arquitectura por Contrato**: Todo paquete `infra-*` debe implementar `BaseModule` de `@repo/core`.
+2. **No importaciones cruzadas**: Las aplicaciones (`apps/`) no pueden importar directamente de otras aplicaciones. Deben pasar por paquetes en `packages/`.
+3. **Tests de Regresión**: Ante la corrección de un bug, es **obligatorio** añadir un test que reproduzca el bug.
+4. **Desacople**: Si un paquete crece en complejidad, separa la lógica en `src/domain/` (lógica pura) y `src/infrastructure/` (implementación).
 
-- **Pre-commit Hooks:** Al intentar hacer commit, se ejecuta automáticamente:
-  1. `typecheck` (TypeScript)
-  2. `lint` (ESLint + SonarJS)
-  3. `test` (Vitest)
-  4. `lint-staged` (Prettier + Validación de arquitectura con `dependency-cruiser`)
+## 5. Control de Calidad (Obligatorio)
 
-**Si el `pre-commit` falla, el código NO se confirma.** Debes corregir los errores para poder hacer commit.
+No podrás confirmar código (Git Commit) si no superas los **Quality Gates**:
 
-## 5. Reglas de Oro (Arquitectura)
+- **Pre-commit Hooks (Husky)**:
+  1. `typecheck`: Valida integridad de tipos global.
+  2. `lint`: Aplica reglas de SonarJS y ESLint.
+  3. `test`: Ejecuta pruebas con Vitest.
+  4. `depcruise`: Valida que no haya importaciones prohibidas o circulares.
 
-1.  **Arquitectura por Contrato:** Todo paquete `infra-*` debe implementar `BaseIntegration` de `@repo/core`.
-2.  **No importaciones cruzadas:** Las aplicaciones (`apps/`) no pueden importar directamente de otras aplicaciones. Deben pasar por paquetes en `packages/`.
-3.  **Tests de Regresión:** Ante la corrección de un bug, es **obligatorio** añadir un test que reproduzca el bug.
-4.  **Desacople:** Si un paquete crece en complejidad, separa la lógica en `services/` y `mappers/` dentro de su carpeta `src/`.
+**Comando de validación manual:**
+```bash
+pnpm build && pnpm lint && pnpm typecheck && pnpm test && npx depcruise --validate .dependency-cruiser.js .
+```
 
-## 6. Despliegue
+## 6. Gestión de Tareas e IA
 
-El despliegue está automatizado mediante GitHub Actions y Railway.
+- **Issues**: Todas las tareas comienzan con un Issue. Usa las plantillas de `bug_report` o `feature_request`.
+- **Ramas**: Formato `feat/#ID-nombre` o `fix/#ID-nombre`.
+- **Agentes IA**: Si utilizas un agente IA, asegúrate de que lea el archivo `GEMINI.md` en la raíz antes de proceder.
 
-- Cualquier push a `main` dispara el pipeline de CI.
-- El sistema utiliza `turbo` para reconstruir solo las partes afectadas (`--filter`).
+## 7. Logging y Debugging
+
+Usa siempre el logger contextual:
+```typescript
+const logger = createScopedLogger('mi-modulo');
+logger.info('Tarea completada'); // Saldrá con el tag del módulo en los logs
+```

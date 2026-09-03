@@ -5,12 +5,18 @@ import {
 } from "@nestjs/platform-fastify";
 import { AppModule } from "./app.module";
 import { env } from "./env";
+import { registry } from "./common/ModuleRegistry";
+import { TestPlugModule } from "@repo/infra-test-plug";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }), // Fastify logger habilitado
   );
+
+  // REGISTRO DE MÓDULOS PLUG-AND-PLAY
+  const testModule = new TestPlugModule();
+  await registry.register(testModule);
 
   // Seguridad CORS: Solo permitir el dominio del frontend
   app.enableCors({

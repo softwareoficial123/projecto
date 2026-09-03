@@ -1,26 +1,47 @@
-# High-Traffic Monorepo
+# High-Traffic Monorepo: Plug-and-Play Architecture
 
-## Estructura del Proyecto
+Plataforma modular escalable para integraciones de mensajería y orquestación de servicios.
 
-- `apps/api-gateway`: Backend (NestJS + Fastify).
-- `apps/web`: Frontend (Next.js).
-- `packages/database`: Prisma schema y migraciones.
-- `packages/logger`: Logger estructurado (Pino).
+## 1. Estructura del Proyecto
 
-## Despliegue (Railway)
+Este monorepo utiliza **Turborepo** y **pnpm** para gestionar múltiples aplicaciones y paquetes:
 
-Este proyecto está configurado para despliegue automatizado mediante `railway.toml`.
+- **`apps/api-gateway`**: Orquestador central construido con NestJS + Fastify. Gestiona la lógica de negocio y la carga dinámica de módulos.
+- **`apps/web`**: Frontend administrativo construido con Next.js.
+- **`packages/core`**: Define los contratos maestros (`BaseModule`, `ModuleConfig`) que garantizan la modularidad.
+- **`packages/infra-*`**: Adaptadores e integraciones independientes (ej. WhatsApp, TestPlug).
+- **`packages/database`**: Capa de persistencia centralizada usando Prisma ORM.
+- **`packages/logger`**: Sistema de logging estructurado basado en Pino con soporte para contextos (Scoped Loggers).
+- **`packages/domain-messaging`**: Lógica de dominio pura para el manejo de mensajes y eventos.
 
-- Railway detecta automáticamente los Dockerfiles en la raíz.
-- Cada despliegue ejecuta automáticamente las migraciones de Prisma.
+## 2. Despliegue (Railway & Docker)
 
-## Desarrollo Local
+El proyecto está listo para producción mediante Dockerfiles optimizados:
 
-Para arrancar todo el ecosistema (DB + API + WEB) de forma idéntica a producción:
+- `Dockerfile.api`: Construye y despliega el API Gateway y sus dependencias internas.
+- `Dockerfile.web`: Construye y despliega el frontend.
 
-1. Construir imágenes:
-   `docker build -t projecto-api:prod -f Dockerfile.api .`
-   `docker build -t projecto-web:prod -f Dockerfile.web .`
+**Automatización:** Cada despliegue en Railway ejecuta automáticamente `prisma migrate deploy`.
 
-2. Arrancar:
-   `docker-compose -f docker-compose.dev.yml up`
+## 3. Desarrollo Local Rápido
+
+Para arrancar el ecosistema completo (Base de Datos + API + Web):
+
+1. **Construir Imágenes Locales:**
+   ```bash
+   docker build -t projecto-api:prod -f Dockerfile.api .
+   docker build -t projecto-web:prod -f Dockerfile.web .
+   ```
+
+2. **Levantar Contenedores:**
+   ```bash
+   docker compose -f docker-compose.dev.yml up -d
+   ```
+
+3. **Ver Logs:**
+   ```bash
+   docker compose -f docker-compose.dev.yml logs -f api
+   ```
+
+---
+*Este proyecto sigue reglas estrictas de calidad. Consulta `DEVELOPING.md` para empezar a contribuir.*

@@ -18,6 +18,9 @@ COPY packages ./packages
 # Instalar TODO (para poder ejecutar builds)
 RUN pnpm install
 
+# Construir todos los paquetes primero (dependencias internas)
+RUN pnpm build
+
 # Construir específicamente el paquete deseado (p. ej. api-gateway)
 RUN pnpm --filter api-gateway build
 

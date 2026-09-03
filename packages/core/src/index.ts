@@ -1,1 +1,2 @@
-export * from "./BaseIntegration";
+export * from './BaseIntegration';
+export * from './BaseModule';
