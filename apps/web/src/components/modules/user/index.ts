@@ -1,4 +1,4 @@
-import UserPanel from './UserPanel';
+import { UserPanel } from './UserPanel';
 import { PanelDefinition } from '../../../types/panel';
 
 export const userPanel: PanelDefinition = {
