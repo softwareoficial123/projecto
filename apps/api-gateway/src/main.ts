@@ -20,7 +20,7 @@ async function bootstrap() {
 
   // Seguridad CORS: Solo permitir el dominio del frontend
   app.enableCors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || ["http://localhost:3000", "http://localhost:3002"],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   });
